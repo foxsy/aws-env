@@ -6,14 +6,15 @@ function _aws_env() {
   [[ -z "${profile}" ]] && echo "AWS cli unconfigured - didn't get a profile name as argument or as env \$AWS_PROFILE" && return
   if [[ $# -le 0 ]] && command -v fzf
     then
-      profiles="$(_aws_list_profiles | fzf --prompt "profiles: " -m)"
+      profiles="$(_aws_list_profiles | fzf --prompt "profiles: " -m | tr -d '[],')"
+      _aws_unset
+      echo `Loading AWS profile $profiles`
       export AWS_PROFILE=$profiles
-  fi
-  elif
+  else
+    _aws_unset
+    echo `Loading AWS profile $profile`
     export AWS_PROFILE=$profile
   fi
-  export AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id --profile $profile`
-  export AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key --profile $profile`
 }
 
 function _aws_unset() {
