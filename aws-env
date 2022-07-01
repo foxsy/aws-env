@@ -8,11 +8,11 @@ function _aws_env() {
     then
       profiles="$(_aws_list_profiles | fzf --prompt "profiles: " -m | tr -d '[],')"
       _aws_unset
-      echo `Loading AWS profile $profiles`
+      echo "Loading AWS profile $profiles"
       export AWS_PROFILE=$profiles
   else
     _aws_unset
-    echo `Loading AWS profile $profile`
+    echo "Loading AWS profile $profile"
     export AWS_PROFILE=$profile
   fi
 }
@@ -27,7 +27,10 @@ function _aws_list_profiles() {
   credentialFile="${AWS_CREDENTIAL_FILE:-'~/.aws/credentials'}"
 
   while read line; do
-      if [[ $line == "["* ]]; then echo "$line"; fi;
+      if [[ $line == "["* ]]
+        then 
+          echo "$line" | sed 's/profile //g' # In case you need this to work with the ~/.aws/config and SSO 
+      fi
   done < $credentialFile;
 };
 
